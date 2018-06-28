@@ -88,11 +88,13 @@ router.get('/getuserdata', function(req, res, next) {
             return res.status(201).send({"Message":"Created", type:"internal"});
         })
         })
+
+        //mailing
         var mailOptions = {
             from: 'keerthi.regnis@gmail.com', // sender address
             to: req.body.Mailid, // list of receivers
             subject: 'link to change password', // Subject line
-            text: 'http://10.10.5.54:4200/changepassword/'+suc._id           +'     Click on the link' // html body
+            text: 'http://10.10.5.49:4200/changepassword/'+suc._id           +'     Click on the link' // html body
         };
         email_smtp.sendMail(mailOptions, (error, info) => {
             if (error) {

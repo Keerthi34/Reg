@@ -64,64 +64,170 @@ router.get('/getuserdata', function(req, res, next) {
     });
   })
 
-      /*Create new account for registration*/
-      router.post('/createaccount',function(req,res,next){
-        winston.log('info',"Info level")
-        var t=new User({
-         Student_Id:1,
-          Name:req.body.Name,
-          type:req.body.Parent_type,
-          P_Name:req.body.Parent_Name,
-         Phone_Number: req.body.Phone_Number,
-          Mailid:req.body.Mailid
-        })
-        t.save(function(err,suc){
-            if(err)
-            res.send(err)
-            else {
 
-              User.count({}, function( err, count){
+    /*Create new account for registration*/
+        router.post('/createaccount',function(req,res,next){
+          winston.log('info',"Info level")
+          var t=new User({
+           stid:1,
 
-                var sc="S"+count++
-                User.findOneAndUpdate({_id:suc.id}, {Student_Id:sc}, {upsert:true}, function(err, doc){
-            if (err) return res.status(500).send( { error: err });
-            return res.status(201).send({"Message":"Created", type:"internal"});
-        })
+           photo:req.body.photo,
+             admissionnumber:req.body.admissionnumber,
+
+             name:req.body.name,
+             lastname:req.body.lastname,
+             mothername:req.body.mothername,
+             fathername: req.body.fathername,
+             guardian:req.body.guardian,
+             phonenumber: req.body.phonenumber,
+             mailid:req.body.mailid,
+             class:req.body.class,
+             bloogroup:req.body.bloogroup,
+             address:req.body.address,
+             type:req.body.Parent_type,
+             P_Name:req.body.Parent_Name,
+
+
+           /*
+            Name:req.body.Name,
+            type:req.body.Parent_type,
+            P_Name:req.body.Parent_Name,
+           Phone_Number: req.body.Phone_Number,
+            Mailid:req.body.Mailid
+
+            */
+          })
+          t.save(function(err,suc){
+              if(err)
+              res.send(err)
+              else {
+
+                User.count({}, function( err, count){
+
+                  var sc="S"+count++
+                  User.findOneAndUpdate({_id:suc.id}, {stid:sc}, {upsert:true}, function(err, doc){
+              if (err) return res.status(500).send( { error: err });
+              return res.status(201).send({"Message":"Created", type:"internal"});
+          })
+          })
+
+          //mailing
+          var mailOptions = {
+              from: 'keerthi.regnis@gmail.com', // sender address
+              to: req.body.mailid, // list of receivers
+              subject: 'link to change password', // Subject line
+              text: 'http://10.10.5.54:4200/changepassword/'+suc._id           +'     Click on the link' // html body
+          };
+          email_smtp.sendMail(mailOptions, (error, info) => {
+              if (error) {
+                  res.send("dsfds "+error);
+              }else {
+                res.send(info);
+              }
+              });
+              //  res.send(suc)
+              }
+              function getNextSequenceValue(sequenceName){
+
+                var sequenceDocument = db.counters.findOneAndUpdate(
+                  { "_id" : sequenceName },
+                   { $inc : { sequence_value : 1 } },
+                   { new : true }
+                 );
+             return sequenceDocument.sequence_value;
+           }
+          })
         })
 
-        //mailing
-        var mailOptions = {
-            from: 'keerthi.regnis@gmail.com', // sender address
-            to: req.body.Mailid, // list of receivers
-            subject: 'link to change password', // Subject line
-            text: 'http://10.10.5.49:4200/changepassword/'+suc._id           +'     Click on the link' // html body
-        };
-        email_smtp.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                res.send("dsfds "+error);
-            }else {
-              res.send(info);
-            }
-            });
-            //  res.send(suc)
-            }
-            function getNextSequenceValue(sequenceName){
 
-              var sequenceDocument = db.counters.findOneAndUpdate(
-                { "_id" : sequenceName },
-                 { $inc : { sequence_value : 1 } },
-                 { new : true }
-               );
-           return sequenceDocument.sequence_value;
-         }
-        })
-      })
+
+        /*new post */
+
+              router.post('/post' ,function(req,res,next)
+              { // winston.log('info',"this is admission details page");
+
+                var student= new User({
+                  photo:req.body.photo,
+                  admissionnumber: req.body.admissionnumber,
+                  stid:1,
+                  name: req.body.name,
+                  lastname: req.body.lastname,
+                  mothername: req.body.mothername,
+                  fathername: req.body.fathername,
+                  guardian: req.body.guardianname,
+                  phonenumber: req.body.phonenumber,
+                  mailid: req.body.mailid,
+                  class: req.body.class,
+                  bloogroup: req.body.bloogroup,
+                  address: req.body.address,
+                  type:req.body.Parent_type,
+                  P_Name:req.body.Parent_Name
+
+
+                })
+                  student.save({},function (err,suc) {
+                  if (err)
+
+                    res.status(404).send({error:err.message})
+
+                  else{
+                    //res.send("saved")
+
+                  User.count({}, function( err, count){
+
+                    var sc="EX"+count++
+                    console.log("dfd "+suc.id)
+                  //  console.log("dfd "+suc.type)
+                    User.findOneAndUpdate({_id:suc.id}, {stid:sc},  {upsert:true}, function(err, doc){
+                     // console.log(success)
+                      if (err) return res.send({status:500, message: 'internal error', type:'internal'});
+
+                      return res.status(201).send({message: 'create student record', type:'internal'});
+                    })
+
+                  })
+                  //mailing
+                  var mailOptions = {
+                      from: 'keerthi.regnis@gmail.com', // sender address
+                      to: req.body.mailid, // list of receivers
+                      subject: 'link to change password', // Subject line
+                      text: 'http://10.10.5.54:4200/changepassword/'+suc._id                  +'     Click on the link' // html body
+                  };
+                  email_smtp.sendMail(mailOptions, (error, info) => {
+                      if (error) {
+                          res.send("dsfds "+error);
+                      }else {
+                        res.send(info);
+                      }
+                      });
+
+
+
+                  //  res.send(suc)
+                }
+                function getNextSequenceValue(){
+
+                  var sequenceDocument = db.counters.findOneAndUpdate(
+                    { "_id" : sequenceName },
+                    { $inc : { sequence_value : 1 } },
+                    { new : true }
+                  );
+                  return sequenceDocument.sequence_value;
+                }
+
+
+              })
+
+              })
+
 
 /*save password*/
 router.post('/savepassword/:_id', function(req,res,next){
 
   var t= new Password({
     Id:req.body.Id,
+    type:req.body.type,
+    mailid:req.body.mailid,
 
     Password:req.body.Password
 

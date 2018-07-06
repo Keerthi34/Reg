@@ -147,6 +147,7 @@ router.get('/getuserdata', function(req, res, next) {
               { // winston.log('info',"this is admission details page");
 
                 var student= new User({
+                  School_Id:req.body.School_Id,
                   photo:req.body.photo,
                   admissionnumber: req.body.admissionnumber,
                   stid:1,
@@ -224,14 +225,9 @@ router.get('/getuserdata', function(req, res, next) {
 /*save password*/
 router.post('/savepassword/:_id', function(req,res,next){
 
-  var t= new Password({
-    Id:req.body.Id,
-    type:req.body.type,
-    mailid:req.body.mailid,
-
-    Password:req.body.Password
-
-  })
+  var t= new Password(
+    req.body
+  )
 
     t.save(function(err,suc){
       if(err)

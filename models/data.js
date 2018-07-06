@@ -4,7 +4,7 @@ var Schema = mongoose.Schema;
 
 var schema = new Schema({
 
-
+   School_Id: String,
   photo:String,
     admissionnumber:String,
     stid:{type:String},
@@ -22,13 +22,6 @@ var schema = new Schema({
     P_Name:{type:String},
 
 
-/*  "Student_Id" : {type:String},
-  "Name" : {type:String},
-  "type":{type:String},
-  "P_Name":{type:String},
-  "Phone_Number":{type:String},
-  "Mailid":{type:String}
-*/
 
 })
 
